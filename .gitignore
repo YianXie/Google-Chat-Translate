@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dist-e2e/
+.e2e-profile/
+e2e/output/
+coverage/
+.DS_Store

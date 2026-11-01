@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <path d="M28 14h72a20 20 0 0 1 20 20v46a20 20 0 0 1-20 20H64l-24 20v-20H28A20 20 0 0 1 8 80V34a20 20 0 0 1 20-20z" fill="#3b5bdb"/>
+  <text x="41" y="73" fill="#fff" font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="46" font-weight="600" text-anchor="middle">文</text>
+  <text x="88" y="88" fill="#fff" font-family="Helvetica Neue, Arial, sans-serif" font-size="46" font-weight="700" text-anchor="middle">A</text>
+</svg>

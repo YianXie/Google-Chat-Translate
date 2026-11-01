@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Google Chat Translate",
+  "version": "0.1.0",
+  "description": "Translate Google Chat messages on-device. Free, private, and works offline.",
+  "minimum_chrome_version": "138",
+  "permissions": ["storage"],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_title": "Google Chat Translate",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chat.google.com/*", "https://mail.google.com/chat/*"],
+      "js": ["content.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ]
+}

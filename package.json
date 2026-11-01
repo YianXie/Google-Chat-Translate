@@ -1,0 +1,26 @@
+{
+  "name": "google-chat-translate",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Translate Google Chat messages on-device: free, private, and offline.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "watch": "node scripts/build.ts --watch",
+    "test": "vitest run",
+    "typecheck": "tsc",
+    "check": "npm run typecheck && npm test && npm run build",
+    "e2e": "node scripts/build.ts --e2e && node e2e/smoke.ts",
+    "icons": "node scripts/render-icons.ts"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.3.7",
+    "@types/node": "26.6.6",
+    "esbuild": "0.28.2",
+    "jsdom": "30.1.3",
+    "puppeteer-core": "25.16.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}
