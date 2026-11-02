@@ -15,13 +15,13 @@ function rect(left: number, top: number, width: number, height: number): Rect {
   return { left, top, width, height, right: left + width, bottom: top + height };
 }
 
-const lastLine = { anchor: rect(100, 200, 180, 20), row: rect(40, 190, 600, 40) };
+const incoming = { bubble: rect(100, 200, 180, 20), row: rect(40, 190, 600, 40) };
 
 let onClick: ReturnType<typeof vi.fn<HoverButtonDeps['onClick']>>;
 let onContextMenu: ReturnType<typeof vi.fn<HoverButtonDeps['onContextMenu']>>;
 let hover: HoverButton;
 
-function start(measure: HoverButtonDeps['measure'] = () => lastLine): void {
+function start(measure: HoverButtonDeps['measure'] = () => incoming): void {
   hover = createHoverButton({ doc: document, onClick, onContextMenu, measure, hideDelayMs: 300 });
 }
 
@@ -57,7 +57,7 @@ afterEach(() => {
 });
 
 describe('hover button', () => {
-  it('appears just after the end of the message under the pointer', () => {
+  it('appears beside the message under the pointer', () => {
     hoverOver(bodyOf('msg-es'));
 
     expect(button().hidden).toBe(false);
@@ -120,8 +120,8 @@ describe('hover button', () => {
 
   it('moves with the message when the chat scrolls', () => {
     hover.destroy();
-    start(vi.fn<NonNullable<HoverButtonDeps['measure']>>().mockReturnValueOnce(lastLine).mockReturnValue({
-      anchor: rect(100, 150, 180, 20),
+    start(vi.fn<NonNullable<HoverButtonDeps['measure']>>().mockReturnValueOnce(incoming).mockReturnValue({
+      bubble: rect(100, 150, 180, 20),
       row: rect(40, 140, 600, 40),
     }));
     hoverOver(bodyOf('msg-es'));
@@ -138,11 +138,25 @@ describe('hover button', () => {
 });
 
 describe('placeButton', () => {
-  it('sits just after the last line, centred on it', () => {
-    expect(placeButton(rect(100, 200, 180, 20), rect(40, 190, 600, 40), 26)).toEqual({ left: 286, top: 197 });
+  const row = rect(40, 190, 600, 100);
+
+  it('sits right of a left-aligned bubble, from someone else', () => {
+    expect(placeButton(rect(100, 200, 180, 20), row, 26)).toEqual({ left: 286, top: 197 });
   });
 
-  it('stays inside the message row', () => {
-    expect(placeButton(rect(100, 200, 530, 20), rect(40, 190, 600, 40), 26)).toEqual({ left: 610, top: 197 });
+  it('sits left of a right-aligned bubble, your own', () => {
+    expect(placeButton(rect(400, 200, 200, 20), row, 26)).toEqual({ left: 368, top: 197 });
+  });
+
+  it('centres on the whole bubble, however tall', () => {
+    expect(placeButton(rect(100, 200, 180, 80), row, 26).top).toBe(227);
+  });
+
+  it.each([
+    ['left-aligned', rect(100, 200, 180, 20)],
+    ['right-aligned', rect(400, 200, 200, 20)],
+  ])('never overlaps a %s bubble', (_name, bubble) => {
+    const { left } = placeButton(bubble, row, 26);
+    expect(left + 26 <= bubble.left || left >= bubble.right).toBe(true);
   });
 });

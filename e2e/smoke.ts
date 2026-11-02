@@ -180,22 +180,19 @@ try {
     await chatPage.waitForSelector('gct-overlay');
   });
 
-  await step('the floating button appears right after the message text', async () => {
+  await step('the floating button appears beside the bubble, centred on it', async () => {
     await hoverButton(chatPage, 'msg-es');
     const placement = await chatPage.evaluate(() => {
-      const body = document.querySelector('[data-id="msg-es"] [jsname="bgckF"]') as Element;
-      const range = document.createRange();
-      range.selectNodeContents(body);
-      const line = [...range.getClientRects()].at(-1) as DOMRect;
+      const bubble = (document.querySelector('[data-id="msg-es"] [jsname="bgckF"]')?.parentElement as Element).getBoundingClientRect();
       const button = document.querySelector('gct-overlay')?.shadowRoot?.querySelector('button')?.getBoundingClientRect() as DOMRect;
       return {
-        gap: button.left - line.right,
-        offCentre: Math.abs(button.top + button.height / 2 - (line.top + line.height / 2)),
+        gap: button.left - bubble.right,
+        offCentre: Math.abs(button.top + button.height / 2 - (bubble.top + bubble.height / 2)),
       };
     });
     console.log(`    ${JSON.stringify(placement)}`);
-    assert.ok(placement.gap >= 0 && placement.gap <= 12, 'button is not next to the text');
-    assert.ok(placement.offCentre <= 2, 'button is not centred on the last line');
+    assert.ok(placement.gap >= 0 && placement.gap <= 12, 'button is not next to the bubble');
+    assert.ok(placement.offCentre <= 2, 'button is not centred on the bubble');
   });
 
   const spanish = await step('left-click translates Spanish to English, detected automatically', async () => {

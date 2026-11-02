@@ -15,9 +15,9 @@ export interface Rect {
 }
 
 export interface Measured {
-  /** The last line of the message text. */
-  anchor: Rect;
-  /** The message row; the button stays inside it so moving onto the button keeps the hover. */
+  /** The coloured bubble, which grows to include the translation. */
+  bubble: Rect;
+  /** The message row, wider than the bubble on the side that has free space. */
   row: Rect;
 }
 
@@ -33,20 +33,19 @@ export interface HoverButton {
   destroy(): void;
 }
 
-export function placeButton(anchor: Rect, row: Rect, size: number, gap = 6): { left: number; top: number } {
+/** Beside the bubble, centred on it. Chat right-aligns your own messages, so the free space is on their left. */
+export function placeButton(bubble: Rect, row: Rect, size: number, gap = 6): { left: number; top: number } {
+  const rightAligned = row.right - bubble.right < bubble.left - row.left;
   return {
-    left: Math.min(anchor.right + gap, row.right - size - 4),
-    top: anchor.top + (anchor.height - size) / 2,
+    left: rightAligned ? bubble.left - gap - size : bubble.right + gap,
+    top: bubble.top + (bubble.height - size) / 2,
   };
 }
 
 function measureMessage(message: HTMLElement): Measured | null {
   const body = getBody(message);
   if (!body) return null;
-  const range = message.ownerDocument.createRange();
-  range.selectNodeContents(body);
-  const lines = [...range.getClientRects()].filter((line) => line.width > 0 && line.height > 0);
-  return { anchor: lines.at(-1) ?? body.getBoundingClientRect(), row: message.getBoundingClientRect() };
+  return { bubble: (body.parentElement ?? body).getBoundingClientRect(), row: message.getBoundingClientRect() };
 }
 
 function hasWords(message: HTMLElement): boolean {
@@ -84,7 +83,7 @@ export function createHoverButton(deps: HoverButtonDeps): HoverButton {
   function position(): void {
     const measured = current?.isConnected ? measure(current) : null;
     if (!measured) return hide();
-    const { left, top } = placeButton(measured.anchor, measured.row, SIZE);
+    const { left, top } = placeButton(measured.bubble, measured.row, SIZE);
     button.style.left = `${left}px`;
     button.style.top = `${top}px`;
   }
